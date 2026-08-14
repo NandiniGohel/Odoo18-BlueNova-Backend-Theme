@@ -1,0 +1,339 @@
+// ============================================================
+// Apps sidebar (.cmt-app-sidebar)
+//
+// Replaces Odoo's apps dropdown with a persistent rail down the
+// left edge, below the navbar. Toggled by the navbar's grid
+// button; see js/apps_sidebar.js.
+// ============================================================
+
+// Paint a single-colour icon: the artwork supplies the shape through a
+// mask, `background-color` supplies the colour. The shape comes from
+// `--cmt-icon-url`, set per row as an inline style by the template.
+//
+// Longhands rather than the `mask:` shorthand on purpose — the `/` in
+// `center / contain` is ambiguous to a SCSS compiler, and this way there
+// is nothing for it to misread.
+@mixin cmt-masked-icon {
+    -webkit-mask-image: var(--cmt-icon-url);
+    mask-image: var(--cmt-icon-url);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+// ── Layout ───────────────────────────────────────────────────
+// The rail is taken out of flow and the action manager is inset to
+// clear it, rather than the two being made grid/flex siblings.
+//
+// That is deliberate. On Odoo 14 `.o_web_client` is <body> itself
+// (webclient_templates.xml sets it as body_classname, and
+// web.web_client calls setElement($(document.body))), so its children
+// are not just the navbar and the action manager — dialogs, the
+// notification manager and the loading indicator all live there too,
+// and any grid or flex-row over that set has to account for each one.
+// Odoo's entire scroll model is also written as `.o_web_client >
+// .o_action_manager > .o_action`, ending in
+// `.o_content { overflow: auto; height: 100% }` (webclient_layout.scss);
+// restructuring that chain is what stops views scrolling.
+//
+// Both halves hang off `cmt-has-sidebar` on <body>, which
+// js/apps_sidebar.js sets from the stored open/closed choice.
+$cmt-sidebar-width: 208px;
+$cmt-sidebar-width-md: 176px;
+// = $o-navbar-height in web/static/src/scss/primary_variables.scss.
+// Read through the variable so a future core change follows.
+$cmt-navbar-height: $o-navbar-height;
+
+.cmt-app-sidebar {
+    position: fixed;
+    top: $cmt-navbar-height;
+    left: 0;
+    bottom: 0;
+    width: $cmt-sidebar-width;
+    // Above the action manager, below Bootstrap's modal/backdrop layer.
+    z-index: 3;
+    flex-flow: column nowrap;
+    min-height: 0;
+    padding: 12px 10px;
+    background-color: var(--cmt-sidebar-bg);
+    border-right: 1px solid var(--cmt-border);
+    font-family: var(--cmt-font-sans);
+
+    // ── Workspace header ─────────────────────────────────────
+    // Doubles as the brand area: Settings > Theme Settings can upload
+    // a background image for it, which arrives as --cmt-sidebar-brand-image
+    // (a url(), injected per-page by views/theme_styles.xml). No image
+    // uploaded means the token is never declared, `background-image`
+    // falls back to `none`, and the flat primary-light fill below is all
+    // that shows — which is how the block looked before this existed.
+    .cmt-app-sidebar__workspace {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        margin-bottom: 12px;
+        border-radius: var(--cmt-radius-md);
+        background-color: var(--cmt-primary-light);
+        background-image: var(--cmt-sidebar-brand-image, none);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        overflow: hidden;
+    }
+
+    // Masked like the app icons below, so it takes the container's own
+    // text colour in both themes rather than needing a dark-mode invert.
+    .cmt-app-sidebar__workspace-icon {
+        flex: 0 0 auto;
+        width: 20px;
+        height: 20px;
+        background-color: var(--cmt-on-primary-container);
+        @include cmt-masked-icon;
+    }
+
+    .cmt-app-sidebar__workspace-text {
+        display: flex;
+        flex-flow: column nowrap;
+        min-width: 0;
+    }
+
+    .cmt-app-sidebar__workspace-name {
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.3;
+        color: var(--cmt-on-primary-container);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .cmt-app-sidebar__workspace-sub {
+        font-family: var(--cmt-font-label);
+        font-size: 8px;
+        font-weight: 500;
+        letter-spacing: var(--cmt-tracking-label);
+        text-transform: uppercase;
+        line-height: 1.4;
+        color: var(--cmt-outline);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    // ── App list ─────────────────────────────────────────────
+    // Long app lists scroll on their own; the header and the
+    // status footer stay pinned.
+    .cmt-app-sidebar__apps {
+        flex: 1 1 auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+    }
+
+    .cmt-app-sidebar__app {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 10px;
+        margin-bottom: 2px;
+        border-radius: var(--cmt-radius-md);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--cmt-text-muted);
+        text-decoration: none;
+        transition: color .15s ease, background-color .15s ease;
+
+        &:hover, &:focus {
+            color: var(--cmt-text-hover);
+            background-color: var(--cmt-surface-highest);
+            text-decoration: none;
+
+            .cmt-app-sidebar__app-icon--bundled {
+                background-color: var(--cmt-app-icon-hover);
+            }
+        }
+    }
+
+    // Current app: filled row plus the accent spine used on kanban cards.
+    .cmt-app-sidebar__app--active {
+        color: var(--cmt-active-app);
+        font-weight: 600;
+        background-color: var(--cmt-primary-light);
+
+        // Hovering the app you are already in keeps the "current" colour,
+        // matching the label. This has to restate :hover/:focus rather than
+        // rely on the base rule: `.app:hover .icon--bundled` above scores
+        // the same as a bare `.app--active .icon--bundled`, so only the
+        // equally-specific selector, declared later, reliably wins.
+        &, &:hover, &:focus {
+            .cmt-app-sidebar__app-icon--bundled {
+                background-color: var(--cmt-active-app);
+            }
+        }
+
+        &:hover, &:focus {
+            color: var(--cmt-active-app);
+            background-color: var(--cmt-primary-light);
+        }
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background-color: var(--cmt-active-app);
+        }
+    }
+
+    .cmt-app-sidebar__app-icon {
+        flex: 0 0 auto;
+        width: 18px;
+        height: 18px;
+    }
+
+    // Bundled artwork is a single-colour silhouette on transparent, so it
+    // is painted rather than drawn: the mask supplies the shape and
+    // background-color supplies the colour. That is what lets one icon set
+    // carry resting / hover / current-app states, and it reads identically
+    // in light and dark — no invert filter, unlike the old <img> version.
+    .cmt-app-sidebar__app-icon--bundled {
+        display: block;
+        background-color: var(--cmt-app-icon);
+        @include cmt-masked-icon;
+        transition: background-color .15s ease;
+    }
+
+    // Apps we have no artwork for keep Odoo's own full-colour icon, which
+    // must be drawn as-is — masking it would flatten it to a blob.
+    .cmt-app-sidebar__app-icon--native {
+        object-fit: contain;
+    }
+
+    .cmt-app-sidebar__app-label {
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    // ── Footer: light / dark switch ──────────────────────────
+    .cmt-app-sidebar__footer {
+        flex: 0 0 auto;
+        padding-top: 8px;
+        margin-top: 8px;
+        border-top: 1px solid var(--cmt-border);
+    }
+
+    .cmt-theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 7px 10px;
+        border: 0;
+        border-radius: var(--cmt-radius-md);
+        background: transparent;
+        font-family: var(--cmt-font-sans);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--cmt-text-muted);
+        text-align: left;
+        transition: color .15s ease, background-color .15s ease;
+
+        &:hover, &:focus {
+            color: var(--cmt-primary);
+            background-color: var(--cmt-primary-light);
+        }
+    }
+
+    // Sized to line up with the app icons above it.
+    .cmt-theme-toggle__icon {
+        flex: 0 0 auto;
+        width: 18px;
+        font-size: 14px;
+        text-align: center;
+    }
+}
+
+// ── Open / closed ────────────────────────────────────────────
+// The rail is a Bootstrap `d-none d-md-flex` element, so both of
+// these have to out-!important that utility rather than merely
+// out-specify it.
+.cmt-app-sidebar--closed {
+    display: none !important;
+}
+
+// Give the action manager the width back. Only from md up: below the
+// breakpoint the rail is hidden and Odoo's own apps dropdown is what
+// switches apps, so there is nothing to clear.
+@media (min-width: 768px) {
+    body.o_web_client.cmt-has-sidebar > .o_action_manager {
+        margin-left: $cmt-sidebar-width;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    body.o_web_client.cmt-has-sidebar > .o_action_manager {
+        margin-left: $cmt-sidebar-width-md;
+    }
+}
+
+// ── Navbar toggle ────────────────────────────────────────────
+// Stands in for Odoo's apps dropdown toggle, so it has to reproduce
+// the sizing web/static/src/scss/navbar.scss gives `.o_main_navbar > button`.
+.o_main_navbar .cmt-apps-toggle {
+    // `.o_main_navbar` is `display: flex` upstream, so the button is a
+    // flex item and needs no float — the 14.0 version of this rule had
+    // one because 14's navbar was a float layout.
+    align-items: center;
+    height: $cmt-navbar-height;
+    padding: 0 12px;
+    border: 0;
+    background: transparent;
+    font-size: 17px;
+    line-height: 1;
+    color: var(--cmt-text-muted);
+    transition: color .15s ease, background-color .15s ease;
+
+    &:hover, &:focus {
+        color: var(--cmt-primary);
+        background-color: var(--cmt-primary-light);
+    }
+
+    &:focus, &:active, &:focus:active {
+        outline: none;
+    }
+
+    &.cmt-apps-toggle--active {
+        color: var(--cmt-primary);
+    }
+}
+
+// Odoo's stock apps menu stays in the DOM so the rail can hand over to
+// it below md, where the rail itself is `d-none`.
+//
+// `.o_navbar_apps_menu` is the dropdown Odoo 18 renders on wide screens;
+// below its own `ui.isSmall` threshold the navbar swaps it for
+// `.o_menu_toggle` (the slide-in sidebar), which is left alone — that is
+// exactly the surface taking over here. The two breakpoints line up:
+// isSmall is `size <= SM`, i.e. the same 768px this media query and the
+// rail's `d-md-flex` use.
+//
+// On 14 this hid a `.cmt-stock-apps-menu` class the patch had to add by
+// hand, because the widget-era markup carried no stable hook of its own.
+@media (min-width: 768px) {
+    .o_main_navbar .o_navbar_apps_menu {
+        display: none !important;
+    }
+}

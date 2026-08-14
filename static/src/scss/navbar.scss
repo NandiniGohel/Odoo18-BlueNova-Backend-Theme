@@ -1,0 +1,201 @@
+// ============================================================
+// Top navbar (.o_main_navbar)
+//
+// Odoo 18 drives most navbar colours through --NavBar-* custom
+// properties, so we retheme by redefining those rather than
+// fighting the base rules with !important. The bar background
+// itself is set as a plain `background` shorthand upstream, so
+// that one does need an override.
+// ============================================================
+.o_main_navbar {
+    // Entry colours (menu items, systray icons, dropdown togglers)
+    //
+    // --NavBar-entry-color--hover matters as much as the rest:
+    // Odoo's %-main-navbar-entry-base feeds it to o-hover-text-color
+    // and falls back to $o-navbar-entry-color--hover ($o-white) when
+    // it is left undefined. White reads fine on the stock dark
+    // navbar; on ours it turned every hovered/clicked menu entry
+    // into white text on a pale fill — invisible.
+    --NavBar-entry-color: var(--cmt-topbar-text);
+    --NavBar-entry-color--hover: var(--cmt-primary);
+    --NavBar-entry-color--active: var(--cmt-primary);
+    --NavBar-entry-backgroundColor: transparent;
+    --NavBar-entry-backgroundColor--hover: transparent;
+    --NavBar-entry-backgroundColor--focus: transparent;
+    --NavBar-entry-backgroundColor--active: transparent;
+    --NavBar-brand-color: var(--cmt-primary);
+
+    // Systray counter badges (unread messages, pending activities).
+    // Odoo ships these in $o-success green; the base rule reads the
+    // value through var(--o-navbar-badge-bg, …) with no one setting
+    // it, so simply defining it here cascades down to every badge.
+    --o-navbar-badge-bg: var(--cmt-primary);
+
+    // The matching text colour has to be set too. Odoo's default is
+    // `$o-navbar-badge-color: inherit` (navbar.variables.scss), so the
+    // digit takes the systray entry colour — the muted grey set below —
+    // and lands on the badge's primary fill at roughly 1.5:1. It is
+    // unreadable in both modes, and worst in dark, where the fill is
+    // the lifted #7c9aff. Pinning it to the canvas colour keeps the
+    // pill legible against whatever --cmt-primary currently is; the
+    // dark drop shadow that Odoo adds for its green badge only muddies
+    // a flat one, so it goes.
+    --o-navbar-badge-color: var(--cmt-surface);
+    --o-navbar-badge-text-shadow: none;
+
+    background: var(--cmt-topbar-bg) !important;
+    border-bottom: 1px solid var(--cmt-border);
+    box-shadow: var(--cmt-shadow-sm);
+    color: var(--cmt-topbar-text);
+
+    // ── Brand / current app name ─────────────────────────────
+    // The mockup sets this at display-lg (48px); that overflows
+    // Odoo's 46px navbar, so we take the same treatment — bold,
+    // tight tracking, primary colour — at a size that fits.
+    .o_menu_brand {
+        font-family: var(--cmt-font-sans);
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: var(--cmt-primary) !important;
+
+        &:hover, &:focus {
+            color: var(--cmt-primary-dark) !important;
+        }
+    }
+
+    // ── Menu sections (Sales / Reporting / Configuration) ─────
+    //
+    // The entries sit as *direct* children of .o_menu_sections —
+    // an <a class="o_nav_entry"> for a leaf section, a <button
+    // class="dropdown-toggle"> for one with a submenu — so they
+    // have to be matched as such, not through a wrapper.
+    //
+    // Selection reads as an underline rather than a filled pill:
+    // the fills stay transparent and the marker is an ::after
+    // inset to the entry's own horizontal padding, which keeps it
+    // under the label instead of spanning the whole hit area.
+    .o_menu_sections {
+        .o_nav_entry,
+        .dropdown-toggle {
+            font-family: var(--cmt-font-sans);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--cmt-topbar-text);
+            transition: color .15s ease;
+
+            // %-main-navbar-entry-base already sets position: relative.
+            //
+            // A section with a submenu is a <button class="dropdown-toggle">,
+            // and that is a *Bootstrap* class: it already owns this ::after
+            // and builds its caret triangle out of borders, not a background —
+            //
+            //   .dropdown-toggle::after {
+            //       margin-left: 3.4px;
+            //       border-top: 4px solid;              // currentColor
+            //       border-right: 4px solid transparent;
+            //       border-left: 4px solid transparent;
+            //   }
+            //
+            // Overriding content/position/height/background here does not
+            // remove any of that. The caret kept its borders and inherited
+            // this block's `left`/`right`, so instead of a triangle it drew a
+            // 4px bar the full width of the label, in the entry's own text
+            // colour, with the side borders tapering its ends and margin-left
+            // pushing it 3.4px off-centre. That is the row of heavy slabs
+            // under Mailings / Reporting / Configuration — dark in light mode,
+            // pale in dark mode, on every section that has a submenu.
+            //
+            // Zeroing both is also what makes the underline a single marker
+            // rather than a caret and an underline fighting for the same
+            // pseudo-element; the caret is redundant once selection reads as
+            // an underline, which is the intent stated above.
+            &::after {
+                content: "";
+                position: absolute;
+                left: .63em;   // = $o-navbar-entry-padding-h
+                right: .63em;
+                bottom: 7px;
+                height: 2px;
+                margin: 0;
+                border: 0;
+                border-radius: 2px;
+                background-color: transparent;
+                transition: background-color .15s ease;
+            }
+
+            // Odoo paints these backgrounds per state; neutralise
+            // them all so only the underline marks the state.
+            &, &:hover, &:focus, &.focus, &:active, &.show {
+                background: transparent;
+            }
+
+            &:hover, &:focus, &.focus {
+                color: var(--cmt-primary);
+
+                &::after {
+                    background-color: var(--cmt-primary-soft);
+                }
+            }
+
+            // Open dropdown / current section: full-strength underline.
+            &.show, &.active, &[aria-expanded="true"] {
+                color: var(--cmt-primary);
+
+                &::after {
+                    background-color: var(--cmt-primary);
+                }
+            }
+        }
+    }
+
+    // ── Apps grid toggle ─────────────────────────────────────
+    .o_navbar_apps_menu, .o_menu_toggle {
+        color: var(--cmt-topbar-text);
+
+        &:hover, &:focus {
+            color: var(--cmt-primary);
+            background-color: var(--cmt-primary-light);
+        }
+    }
+
+    // ── Systray (activities, messaging, user menu) ───────────
+    .o_menu_systray {
+        color: var(--cmt-topbar-text);
+
+        > * {
+            color: var(--cmt-topbar-text);
+
+            &:hover, &:focus {
+                color: var(--cmt-primary);
+            }
+        }
+
+        // Avatar gets the mockup's faint primary ring.
+        .o_avatar, img.rounded-circle {
+            border: 1px solid rgba(57, 89, 176, 0.2);
+            border-radius: 50%;
+        }
+
+        // ── Database chip ────────────────────────────────────
+        // With developer mode on, the user menu toggle prints the
+        // database name under the user name wrapped in a <mark>
+        // (webclient/user_menu/user_menu.xml). Reboot paints every
+        // <mark> from --highlight-bg / --highlight-color, so the chip
+        // arrives as Bootstrap's yellow highlighter: off-palette beside
+        // the navbar in light mode, and unreadable in dark, where
+        // --highlight-bg is retinted to a deep amber but the text stays
+        // at the compiled $mark-color (#212529) — near-black on
+        // near-black, which is what the screenshot shows.
+        //
+        // Retinted here rather than through --highlight-* so a genuine
+        // search-match <mark> elsewhere keeps its highlighter meaning.
+        // Both values are --cmt-* tokens, so the chip follows whichever
+        // mode is active with no dark-mode counterpart rule.
+        .oe_topbar_name mark {
+            background-color: var(--cmt-surface-highest);
+            color: var(--cmt-text-muted);
+            border-radius: var(--cmt-radius-sm);
+        }
+    }
+}

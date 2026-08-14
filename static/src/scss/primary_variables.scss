@@ -1,0 +1,93 @@
+// ============================================================
+// BlueNova — brand variable overrides
+//
+// Odoo's brand colour is a *compiled literal*, not a runtime custom
+// property. Every purple in web/, mail/, calendar/… is baked in at
+// build time from the SCSS variables in
+// web/static/src/scss/primary_variables.scss:
+//
+//   $o-community-color:  #71639e   // the community purple (18.0)
+//   $o-enterprise-color: #714B67
+//   $o-brand-odoo:       $o-community-color
+//   $o-brand-primary:    $o-community-color
+//
+// Redefining --cmt-primary in variables.scss cannot reach any of them
+// — there is no var() on the other end to read it. Left alone, an
+// indigo theme still shows purple links, focus rings, required-input
+// borders, progress bars, calendar's "today" pill and every
+// .btn-primary in the backend, because bootstrap_overridden.scss seeds
+// Bootstrap's whole $primary family from $o-brand-primary.
+//
+// ── Why this file is *prepended*, not appended ──────────────
+//
+// The 14.0 version of this theme appended the same assignments to
+// web._assets_primary_variables, because on 14 that was the only way in
+// (assets were XML templates, and an inherit could only add to the end).
+// Appending is the wrong shape here and would only half-work:
+// $o-brand-primary would take the new value, but everything core
+// derives *from* it — $o-action, $o-main-link-color,
+// $o-input-border-required, the $o-theme-text-colors map — is computed
+// on the line it is declared, which has already run by the time an
+// appended file loads. Those would stay purple.
+//
+// Every one of core's declarations carries `!default`, so prepending
+// instead makes the plain assignments below win and leaves core's
+// versions as no-ops. Everything downstream then derives from the
+// theme's indigo with no per-variable chase. See the ('prepend', …)
+// entry for this file in __manifest__.py.
+//
+// Two things to keep in mind:
+//
+// 1. Anything derived from a brand colour is computed downstream
+//    (secondary_variables.scss and bootstrap_overridden.scss both load
+//    after this file), so nothing has to be restated here.
+//
+// 2. These are build-time values, so they do not follow the light/dark
+//    switch the way --cmt-* tokens do. dark_mode.scss retints the
+//    surfaces it owns; core's brand literals stay at the light-mode
+//    indigo in both schemes.
+//
+// Keep the values in step with --cmt-primary and friends in
+// variables.scss by hand — SCSS cannot read a custom property.
+// ============================================================
+
+// #3959b0 = --cmt-primary (Deep Indigo)
+$o-community-color: #3959b0;
+$o-enterprise-color: #3959b0;
+$o-brand-odoo: #3959b0;
+$o-brand-primary: #3959b0;
+
+// The teal accent Odoo uses for enterprise-flavoured actions — the
+// systray unread counter and a handful of accents in google_calendar,
+// hr_holidays and account. Named $o-enterprise-primary-color on 14;
+// $o-enterprise-action-color since. Pointed at the brand so those
+// badges match the rest of the theme.
+$o-enterprise-action-color: #3959b0;
+
+// ── Type scale ───────────────────────────────────────────────
+// One notch smaller than stock, matching the -1px applied to every
+// font-size the theme declares in its own stylesheets.
+//
+// These four have to be overridden here rather than chased per
+// selector: they are the roots of Odoo's whole type scale. Lowering
+// $o-font-size-base moves $font-size-base, every .fs-1….fs-6 (Odoo
+// derives $h1…$h6 as multiples of it in bootstrap_overridden.scss),
+// $input-btn-font-size, table cells, form controls — the several
+// hundred places nobody would want to restate. $o-font-size-base-small
+// does the same for $font-size-sm, which Odoo also assigns to
+// $small-font-size (so <small>, .small and <code>) and Bootstrap to
+// $input-btn-font-size-sm (so every .btn-sm).
+//
+// Because the heading classes are *multipliers*, they scale rather
+// than shifting by exactly 1px: .fs-5 was 14 × 1.1 = 15.4px and is
+// now 13 × 1.1 = 14.3px. Pinning each $hN-font-size to an exact
+// -1px value instead would flatten the scale's proportions, which is
+// a different change from the one asked for.
+//
+// o-to-rem() is safe this early: its base is a hardcoded default of
+// 16, not $o-root-font-size, so it does not depend on anything core's
+// primary_variables.scss declares after this file.
+$o-font-size-base: o-to-rem(13px);          // was 14px
+$o-font-size-base-touch: o-to-rem(15px);    // was 16px
+$o-font-size-base-small: o-to-rem(12px);    // was 13px
+$o-font-size-base-smaller: o-to-rem(11px);  // was 12px
