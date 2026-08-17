@@ -307,6 +307,114 @@
     }
 }
 
+// ── The website layout ───────────────────────────────────────
+// What the page looks like once `website` is installed.
+//
+// website replaces the root of web.login_layout (see the long comment
+// in views/auth_theme.xml), and the card goes with it: no
+// .card, no .card-body, no logo block, no hairlines. What survives is
+// the site's own header and footer wrapped around a bare
+//
+//     <main>
+//       <div class="o_bluenova_auth_website_head">…</div>   ← ours
+//       <div class="oe_website_login_container">…form…</div> ← website's
+//     </main>
+//
+// so the card is rebuilt here out of those two divs. Everything above
+// this block — labels, inputs, field glyphs, buttons, alerts — already
+// applies, because it hangs off .o_bluenova_auth_page on <body> and
+// that class is now added at the frontend_layout level.
+//
+// The two halves are drawn as one panel: matching fill and side
+// borders, the radius split between the top of the first and the bottom
+// of the second, and no gap between them. They are adjacent siblings in
+// a flex column, which is what keeps the seam invisible.
+//
+// The header and footer are left alone on purpose. Installing `website`
+// is a decision to put the site's chrome on its public pages, and the
+// login page is one of them; the theme's job here is the panel between
+// them, not overruling that.
+.o_bluenova_auth_page.o_bluenova_auth_website {
+
+    // #wrapwrap in the selector is not decoration. website's boxed
+    // layout compiles `#wrapwrap > main { background-color: … }`
+    // (grep BOXED_BODY_BG_ODOO in website.scss), an id selector that a
+    // two-class rule would lose to — and the lost declaration is the
+    // page background, i.e. exactly the bug this file is fixing.
+    #wrapwrap > main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 56px 16px;
+
+        background-color: var(--cmt-login-bg);
+        // Only painted when an image is actually uploaded, same as the
+        // body rule at the top of this file.
+        background-image: var(--cmt-login-bg-image, none);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        color: var(--cmt-text);
+    }
+
+    .o_bluenova_auth_website_head,
+    .oe_website_login_container {
+        width: 100%;
+        // The same 420px the .card rule uses, so the two layouts put the
+        // form at one width.
+        max-width: 420px;
+        // Fallback for the same reason as on .card: if
+        // --cmt-login-card-bg fails to resolve, `background` is invalid
+        // at computed-value time and computes to `transparent` rather
+        // than to anything sensible.
+        background: var(--cmt-login-card-bg, var(--cmt-surface));
+        border-left: var(--cmt-glass-border);
+        border-right: var(--cmt-glass-border);
+    }
+
+    .o_bluenova_auth_website_head {
+        padding: 32px 32px 24px;
+        text-align: center;
+        border-top: var(--cmt-glass-border);
+        // The hairline under the logo block, as in the stock card.
+        border-bottom: 1px solid var(--cmt-border);
+        border-radius: var(--cmt-radius-xl) var(--cmt-radius-xl) 0 0;
+        box-shadow: var(--cmt-chrome-inset);
+    }
+
+    .oe_website_login_container {
+        padding: 24px 32px 32px;
+        border-bottom: var(--cmt-glass-border);
+        border-radius: 0 0 var(--cmt-radius-xl) var(--cmt-radius-xl);
+        box-shadow: var(--cmt-shadow-lg);
+    }
+
+    // website appends <div id="o_shared_blocks"> inside every <main>
+    // (website.shared_blocks). Empty on the login page, but it is a flex
+    // item all the same and would otherwise stretch the column.
+    #o_shared_blocks:empty {
+        display: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .o_bluenova_auth_page.o_bluenova_auth_website {
+        #wrapwrap > main {
+            padding: 32px 12px;
+        }
+
+        .o_bluenova_auth_website_head {
+            padding: 24px 20px 20px;
+        }
+
+        .oe_website_login_container {
+            padding: 20px 20px 24px;
+        }
+    }
+}
+
 // ── Dark mode ────────────────────────────────────────────────
 // Set on <html> by the inline script in views/auth_theme.xml, from
 // the same localStorage key js/theme_mode.js writes in the backend —
