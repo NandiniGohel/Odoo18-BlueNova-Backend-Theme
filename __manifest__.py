@@ -21,7 +21,10 @@ Key Features:
   uploadable sidebar brand image and JSON preset import / export / reset.
   Changes apply on save — no asset rebuild or server restart.
 • The same theme on the login, signup and reset-password pages, including
-  dark mode, an optional logo and background image, and a tagline.
+  dark mode, an optional logo and background image, and a tagline. This
+  holds when `website` is installed: that module rebuilds those pages
+  inside the site layout, and the theme follows them there rather than
+  handing them back to the site's own palette.
 • A themed Dashboard app: KPI tiles for whichever apps are installed and
   readable by the user, optionally opened automatically after login.
 • An optional themed public page at / for anonymous visitors. Off by
