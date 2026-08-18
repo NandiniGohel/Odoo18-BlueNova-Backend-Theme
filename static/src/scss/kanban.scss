@@ -211,6 +211,41 @@
             border-bottom-left-radius: var(--cmt-radius-lg);
         }
 
+        // Odoo 18 emits that panel as `<aside class="o_kanban_aside_full">`
+        // — the legacy `o_kanban_image_fill_left` class above only appears
+        // on pre-17 dashboard cards, so the Contacts / Members / Employees
+        // boards were never covered by it and their photos kept the square
+        // corners the block above exists to fix.
+        //
+        // The radius goes on the aside's child, not on the aside itself:
+        // core bleeds the child past the card padding with negative margins
+        // (`aside.o_kanban_aside_full > *` in kanban_controller.scss), so
+        // `overflow: hidden` one level up would clip the bleed away and
+        // inset the photo instead of rounding it.
+        aside.o_kanban_aside_full > * {
+            overflow: hidden;
+            border-top-left-radius: var(--cmt-radius-lg);
+            border-bottom-left-radius: var(--cmt-radius-lg);
+        }
+
+        // Those same cards run tall and photo-heavy: core sizes the panel
+        // at 95px against a 320px card, and the theme's 16px padding is
+        // counted three times over the card height (top, footer gap,
+        // bottom). Tightened here rather than on .o_kanban_renderer above,
+        // so the CRM pipeline card — designed against the 16px padding —
+        // is left alone; :has() scopes it to cards that actually carry a
+        // photo column.
+        //
+        // Declared on the record itself, which is also the element core's
+        // `padding: var(--KanbanRecord-padding-v) …` rule sits on, so the
+        // narrower values apply to the card box as well as to everything
+        // inside it.
+        &:has(aside.o_kanban_aside_full) {
+            --KanbanRecord-padding-v: 12px;
+            --KanbanRecord-padding-h: 12px;
+            --KanbanRecord__image--fill-width: 76px;
+        }
+
         // Contact metadata line
         .o_cmt_card_contact {
             font-size: 11px;
