@@ -24,8 +24,8 @@ import { applySidebarBodyClass, sidebarState } from "./apps_sidebar_state";
 
 const ICON_ROOT = "/bluenova_backend_theme/static/src/image/icons/";
 
-/** Neutral placeholder, so an app we have no artwork for still gets a row. */
-const ICON_FALLBACK = "generic-app.svg";
+/** Neutral placeholder for custom apps / apps without custom artwork. */
+const ICON_FALLBACK = "custom.png";
 
 /**
  * Display names that have to be checked before anything else.
@@ -67,6 +67,7 @@ const ICON_BY_MODULE = {
     calendar: "calendar.png",
     contacts: "contacts.png",
     crm: "crm.png",
+    custom: "custom.png",
     data_recycle: "data-recycle.png",
     discuss: "discuss.png",
     event: "events.png",
@@ -139,6 +140,7 @@ const ICON_BY_NAME = {
     calendar: "calendar.png",
     contacts: "contacts.png",
     crm: "crm.png",
+    custom: "custom.png",
     dashboards: "dashboards.svg",
     "data cleaning": "data-recycle.png",
     discuss: "discuss.png",
