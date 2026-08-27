@@ -261,15 +261,9 @@ export class AppsSidebar extends Component {
     }
 
     /**
-     * Icon for an app: bundled artwork first, then the app's own Odoo icon
-     * (a data: URL built server-side by ir.ui.menu.load_web_menus), then the
-     * neutral placeholder — so an app we have no artwork for still renders a
-     * row rather than a gap, and never borrows another app's icon.
-     *
-     * `bundled` tells the template which of the two it got. The bundled set
-     * is single-colour, so the template paints it through a CSS mask and the
-     * colour follows hover/active state; Odoo's own icons are full-colour
-     * artwork that has to be drawn as-is. The two cannot share a class.
+     * Icon for an app: bundled artwork first, then the neutral placeholder
+     * (`custom.png`) for custom modules or unmapped apps, keeping all
+     * sidebar icons consistent and styled with theme colors and hover states.
      *
      * @param {Object} app a menu from menuService.getApps()
      * @returns {{src: string, bundled: boolean}}
@@ -281,21 +275,10 @@ export class AppsSidebar extends Component {
             ICON_BY_NAME_FIRST[name] ||
             ICON_BY_XMLID[app.xmlid] ||
             ICON_BY_MODULE[module] ||
-            ICON_BY_NAME[name];
-        if (file) {
-            // Several filenames contain spaces.
-            return { src: ICON_ROOT + encodeURIComponent(file), bundled: true };
-        }
+            ICON_BY_NAME[name] ||
+            ICON_FALLBACK;
 
-        // An icon that already failed to load once: never offer it again, or
-        // the <img> reinstates the broken glyph on every re-render.
-        if (app.webIconData && !this.brokenIcons[app.id]) {
-            // Unlike 14, load_web_menus already returns a full
-            // `data:<mimetype>;base64,…` URL (or a path for icons served
-            // from disk), so there is no prefix to guess here.
-            return { src: app.webIconData, bundled: false };
-        }
-        return { src: ICON_ROOT + ICON_FALLBACK, bundled: true };
+        return { src: ICON_ROOT + encodeURIComponent(file), bundled: true };
     }
 
     /**
