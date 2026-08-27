@@ -37,8 +37,6 @@ Key Features:
 Uninstall the module to instantly return to the default Odoo look.
 No data is modified.
     """,
-    'author': 'Custom',
-    'website': '',
     'license': 'LGPL-3',
     'depends': [
         'web',
