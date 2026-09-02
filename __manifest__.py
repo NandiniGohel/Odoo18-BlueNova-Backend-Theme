@@ -29,8 +29,12 @@ Key Features:
   holds when `website` is installed: that module rebuilds those pages
   inside the site layout, and the theme follows them there rather than
   handing them back to the site's own palette.
-• A themed Dashboard app: KPI tiles for whichever apps are installed and
-  readable by the user, optionally opened automatically after login.
+• A themed Dashboard app built to the DESIGN.md reference: gradient hero
+  cards with a 30-day trend, metric cards with sparklines and status
+  pills, a 30-day column chart with one series per app, a recent-activity
+  feed, quick "New …" actions and a preview of the user's own open work —
+  all for whichever apps are installed and readable by the user, and
+  optionally opened automatically after login.
 • An optional themed public page at / for anonymous visitors. Off by
   default, and it stands down when the `website` module is installed.
 
