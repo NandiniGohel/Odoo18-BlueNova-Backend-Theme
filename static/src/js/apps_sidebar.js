@@ -28,6 +28,22 @@ const ICON_ROOT = "/bluenova_backend_theme/static/src/image/icons/";
 const ICON_FALLBACK = "custom.png";
 
 /**
+ * The theme's own module, and the artwork its Dashboard app is drawn with.
+ *
+ * The module ships no silhouette of its own, so the Dashboard used to fall
+ * through every map below onto ICON_FALLBACK and sat in the rail as the
+ * generic cube. It gets the module icon instead — the same file
+ * views/home_dashboard_actions.xml hands the menu as its `web_icon`, so the
+ * rail, Odoo's own apps menu and the Apps card all show one mark.
+ *
+ * Returned unbundled: that icon is a full-colour brand logo, not a
+ * single-colour silhouette, and the mask every bundled icon is painted
+ * through would flatten it to a solid blob.
+ */
+const BRAND_MODULE = "bluenova_backend_theme";
+const BRAND_ICON = "/bluenova_backend_theme/static/description/icon.png";
+
+/**
  * Display names that have to be checked before anything else.
  *
  * `account.menu_finance` is the app root for both Invoicing and Accounting —
@@ -261,9 +277,13 @@ export class AppsSidebar extends Component {
     }
 
     /**
-     * Icon for an app: bundled artwork first, then the neutral placeholder
+     * Icon for an app: the theme's own brand mark for its Dashboard,
+     * otherwise bundled artwork, then the neutral placeholder
      * (`custom.png`) for custom modules or unmapped apps, keeping all
      * sidebar icons consistent and styled with theme colors and hover states.
+     *
+     * `bundled` says how the template draws it: masked (single-colour,
+     * follows hover / active state) or as a plain full-colour <img>.
      *
      * @param {Object} app a menu from menuService.getApps()
      * @returns {{src: string, bundled: boolean}}
@@ -271,6 +291,13 @@ export class AppsSidebar extends Component {
     getIcon(app) {
         const name = (app.name || "").toLowerCase().trim();
         const module = (app.xmlid || "").split(".")[0];
+
+        // The theme's own Dashboard, before the silhouette maps: it is
+        // drawn from the module icon and must keep its colours.
+        if (module === BRAND_MODULE) {
+            return { src: BRAND_ICON, bundled: false };
+        }
+
         const file =
             ICON_BY_NAME_FIRST[name] ||
             ICON_BY_XMLID[app.xmlid] ||
