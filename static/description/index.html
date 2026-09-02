@@ -1,16 +1,28 @@
 <section class="oe_container">
     <div class="oe_row oe_spaced">
-        <img src="banner.png" class="illustration_img img img-fluid" alt="BlueNova Backend Theme"/>
-        <h2 class="oe_slogan" style="color:#003087;">BlueNova Backend Theme</h2>
-        <h3 class="oe_slogan">A premium glossy metallic reskin of the Odoo 18 backend.</h3>
+        <img src="banner.png" class="oe_picture oe_screenshot" style="width:100%;border-radius:12px;" alt="BlueNova Backend Theme" />
+    </div>
+</section>
+
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color:#3959b0;">BlueNova Backend Theme</h2>
+        <h3 class="oe_slogan">A premium visual reskin of the Odoo 18 backend.</h3>
         <p class="oe_mt32 text-center">
-            Deep Royal Blue and Electric Blue accents, chrome-silver gradients, glassmorphic
-            panels, a persistent app sidebar, light/dark mode, and a Settings screen to
-            recolour everything without touching SCSS.
+            Persistent app sidebar, light/dark mode, a themed login / signup / reset-password
+            flow, an optional public home page, a KPI landing dashboard, and an in-app
+            Settings screen for recolouring everything — no SCSS edits, no asset rebuild.
+        </p>
+        <p class="text-center oe_mt16">
+            <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#3959b0;vertical-align:middle;"></span>
+            Deep Indigo <code>#3959b0</code>
+            &nbsp;&nbsp;
+            <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#0284c7;vertical-align:middle;"></span>
+            Ocean Blue <code>#0284c7</code>
         </p>
         <p class="text-center">
             Activate the app and the theme applies to the whole web client.
-            Uninstall it and Odoo goes back to its stock look — no business data is touched.
+            Uninstall it and Odoo goes back to its stock look — no data is touched.
         </p>
     </div>
 </section>
@@ -20,78 +32,58 @@
         <h3 class="oe_slogan">Design system</h3>
         <div class="oe_span6">
             <ul>
-                <li><b>Palette</b> — Deep Royal Blue (#003087) primary, Electric Blue (#00AEEF)
-                    accents, cool silver / chrome gradients over tiered white surfaces</li>
-                <li><b>One token set</b> — every colour, radius and shadow is a <code>--cmt-*</code>
-                    CSS custom property, so the whole theme recolours from one place</li>
-                <li><b>Typography</b> — Inter and Poppins, bundled in-module (no CDN request)</li>
-                <li><b>Shape &amp; elevation</b> — rounded corners, soft multi-layer shadows,
-                    glossy glassmorphic cards, panels and dropdowns</li>
+                <li><b>Design tokens</b> — a single set of <code>--cmt-*</code> CSS custom
+                    properties drives every colour, radius, shadow and font in the theme</li>
+                <li><b>Palette</b> — Deep Indigo primary with Ocean Blue accents over tiered
+                    white surfaces, fully overridable per-instance from Settings</li>
+                <li><b>Typography</b> — Inter for UI text, Poppins for labels and numerics,
+                    both bundled in-module as latin-subset woff2 (no
+                    <code>fonts.googleapis.com</code> request, nothing breaks offline or
+                    under a strict CSP)</li>
             </ul>
         </div>
         <div class="oe_span6">
             <ul>
-                <li><b>Top navbar</b> — restyled colours and typography</li>
-                <li><b>Left app sidebar</b> replacing Odoo's apps dropdown, with 59 bundled
-                    app icons painted through a CSS mask: grey at rest, blue on hover, a
-                    stronger accent for the app you're in — matched by module name, so it
-                    keeps working in every language</li>
+                <li><b>Shape &amp; elevation</b> — 8/12/16px radii, soft multi-layer shadows,
+                    glassmorphic panels, cards and dropdowns</li>
+                <li><b>Top navbar</b> restyled through Odoo's own <code>--NavBar-*</code>
+                    custom properties, so core keeps control of layout and the theme only
+                    supplies colour</li>
+                <li><b>Responsive</b> — tablet and phone breakpoints mirroring Bootstrap's;
+                    below <code>md</code> the rail steps aside for Odoo's own slide-in app
+                    menu</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h3 class="oe_slogan">Interface</h3>
+        <div class="oe_span6">
+            <ul>
+                <li><b>Persistent app sidebar</b> replacing Odoo's apps dropdown — every app
+                    the user can reach, always visible, current app marked by an accent
+                    spine. Toggled from the navbar's grid button; open/closed state
+                    remembered per browser</li>
+                <li><b>55+ bundled app icons</b>, single-colour and painted through a CSS
+                    mask (grey at rest, blue on hover, a stronger blue for the app you're
+                    in) — matched by module name, so the mapping keeps working regardless
+                    of the user's language. Apps without bundled artwork fall back to their
+                    own Odoo icon, then to a neutral placeholder</li>
+            </ul>
+        </div>
+        <div class="oe_span6">
+            <ul>
                 <li><b>Light / dark mode</b>, switched from the sidebar footer, applied
-                    instantly and remembered per browser</li>
-                <li><b>Control panel</b> styled as a page header, plus glassmorphic kanban
-                    boards with a 320px stage width and an accent spine on each card</li>
-            </ul>
-        </div>
-    </div>
-</section>
-
-<section class="oe_container">
-    <div class="oe_row oe_spaced">
-        <h3 class="oe_slogan">Recolour it from Settings — no code, no rebuild</h3>
-        <p class="oe_mt32 text-center">
-            Settings → Theme Settings gives an admin live colour pickers for the core palette,
-            top bar, search box, sidebar, active-app highlight, semantic colours and the auth
-            pages, each with its own dark-mode counterpart where the surface needs one. An
-            uploadable sidebar brand image and login background (light and dark) round it out.
-            The whole palette can be exported as a JSON preset, re-imported later, or reset to
-            the compiled defaults in one click. Changes apply on save via a page reload —
-            no asset bundle rebuild, no server restart.
-        </p>
-    </div>
-</section>
-
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h3 class="oe_slogan">A themed landing dashboard</h3>
-        <p class="oe_mt32 text-center">
-            An optional KPI dashboard shows tiles for whichever apps are installed and readable
-            by the current user — open opportunities, quotations, RFQs, posted invoices, open
-            tasks, transfers to process, active employees. Every tile counts records as the
-            logged-in user, never with elevated rights, so the numbers respect the same record
-            rules as the underlying list views. It can optionally be set as the page a user
-            lands on right after login.
-        </p>
-    </div>
-</section>
-
-<section class="oe_container">
-    <div class="oe_row oe_spaced">
-        <h3 class="oe_slogan">The same look on login, signup and the public page</h3>
-        <div class="oe_span6">
-            <ul>
-                <li>Login, signup and reset-password pick up the saved palette, an optional
-                    brand logo, and a tagline — including dark mode</li>
-                <li>Still themed if the <code>website</code> module is installed, since that
-                    module rebuilds those pages inside the site layout and the theme follows
-                    them there</li>
-            </ul>
-        </div>
-        <div class="oe_span6">
-            <ul>
-                <li>An optional themed public page at <code>/</code> for anonymous visitors,
-                    off by default</li>
-                <li>It automatically stands down once <code>website</code> is installed, since
-                    that module owns <code>/</code> properly</li>
+                    instantly, remembered per browser. A single <code>data-cmt-theme</code>
+                    attribute on <code>&lt;html&gt;</code> covers dialogs, popovers and
+                    tooltips too — no server round-trip, no bundle rebuild</li>
+                <li><b>Control panel</b> styled as a page header</li>
+                <li><b>Kanban board</b> — 320px stage columns, glassmorphic cards with an
+                    accent spine</li>
+                <li><b>CRM pipeline stat banner</b> above the pipeline, computed entirely
+                    from data already in memory (no extra RPC)</li>
             </ul>
         </div>
     </div>
@@ -99,29 +91,96 @@
 
 <section class="oe_container oe_dark">
     <div class="oe_row oe_spaced">
-        <h3 class="oe_slogan">Safe and reversible</h3>
-        <p class="oe_mt32 text-center">
-            The theme adds no new stored business data. Its only persisted state is a transient
-            wizard used to import a colour preset, and a handful of <code>ir.config_parameter</code>
-            rows and <code>ir.attachment</code> images that hold the chosen palette and uploaded
-            brand art. Uninstalling the app removes all of that, and the backend returns to
-            stock Odoo — nothing else in the database is touched.
-        </p>
+        <h3 class="oe_slogan">Settings → Theme Settings</h3>
+        <div class="oe_span6">
+            <ul>
+                <li><b>Live colour pickers</b> for the core palette, top bar, search box,
+                    sidebar, active-app highlight and semantic colours (info / success /
+                    warning / danger) — each with its own dark-mode counterpart where the
+                    surface needs one</li>
+                <li><b>Uploadable brand image</b> for the sidebar and a login background
+                    image (light and dark), stored as attachments rather than inline, so no
+                    base64 payload rides along on every request</li>
+                <li><b>Hero typography controls</b> (title / lead size and weight) for the
+                    public home page</li>
+            </ul>
+        </div>
+        <div class="oe_span6">
+            <ul>
+                <li><b>Export / Import / Reset</b> — download the current palette as a JSON
+                    preset, re-import it later (validated field-by-field before anything is
+                    written), or reset to the compiled defaults</li>
+                <li>Every colour is validated against a strict hex / <code>rgb()</code> /
+                    <code>rgba()</code> pattern before it is saved <i>and</i> again before it
+                    is rendered into the page</li>
+                <li>Changes apply on save via a page reload — no asset-bundle rebuild, no
+                    server restart</li>
+            </ul>
+        </div>
     </div>
 </section>
 
 <section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h3 class="oe_slogan">Themed dashboard, login, signup and public page</h3>
+        <div class="oe_span6">
+            <ul>
+                <li><b>KPI dashboard</b> — tiles for open opportunities, quotations, RFQs,
+                    posted invoices, open tasks, transfers to process and active employees.
+                    Each tile is dropped silently if its app isn't installed or the current
+                    user can't read it, and counts records as that user — never
+                    <code>sudo()</code> — so record rules apply exactly as they do in the
+                    underlying list view. Can optionally open right after login</li>
+            </ul>
+        </div>
+        <div class="oe_span6">
+            <ul>
+                <li><b>Login, signup and reset-password pages</b> pick up the same palette,
+                    plus an optional logo and tagline — and keep that styling even once the
+                    Website app is installed</li>
+                <li><b>Optional public page at "/"</b> for anonymous visitors — off by
+                    default, and it stands down automatically once the Website app is
+                    installed, since that app owns "/" properly</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="oe_container oe_dark">
     <div class="oe_row oe_spaced">
         <h3 class="oe_slogan">Requirements</h3>
-        <div class="oe_span12">
-            <ul>
-                <li>Odoo 18.0, Community or Enterprise</li>
-                <li>Depends only on <code>web</code> and <code>base_setup</code></li>
-                <li><b>Optional</b> — a CRM pipeline card restyle ships in the module but is
-                    inactive by default, so the theme never hard-depends on <code>crm</code>.
-                    It can be switched on by an administrator who has <code>crm</code> installed.</li>
-            </ul>
-        </div>
+        <table class="table table-borderless text-center" style="max-width:640px;margin:0 auto;">
+            <tbody>
+                <tr>
+                    <td><b>Odoo</b></td>
+                    <td>18.0 (Community or Enterprise)</td>
+                </tr>
+                <tr>
+                    <td><b>Depends</b></td>
+                    <td><code>web</code>, <code>base_setup</code></td>
+                </tr>
+                <tr>
+                    <td><b>Optional</b></td>
+                    <td><code>crm</code> — only for the CRM pipeline card restyle; every
+                        dashboard tile and every other feature degrades gracefully without
+                        it</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h3 class="oe_slogan">Safe by design</h3>
+        <p class="oe_mt32 text-center">
+            The module adds a small settings model, a transient import wizard, and two
+            opt-in controller hooks (login redirect, public home page) — no new stored
+            business data. Its only persisted state is that transient wizard plus a
+            handful of configuration rows and attachment images holding the chosen
+            palette. It can be activated and removed at any time without migrating or
+            losing data.
+        </p>
     </div>
 </section>
 
@@ -131,6 +190,11 @@
         <div class="oe_span12">
             <ul>
                 <li>Odoo's slide-in app menu on small screens (below <code>md</code>) is left as-is.</li>
+                <li><b>Graph views stay light on purpose.</b> Odoo draws chart axis labels
+                    onto the canvas from JS using a colour that Community pins to "light"
+                    server-side, so darkening the panel would put near-black text on a
+                    near-black background — the chart keeps an explicit light card
+                    instead.</li>
                 <li>Dark mode covers the surfaces this theme styles plus the main
                     list / form / kanban / dialog chrome. Odoo compiles most other colours
                     into SCSS, so deeper corners — some reports, iframes and third-party
@@ -140,5 +204,19 @@
                 <li>No fixed bottom footer bar and no floating action button.</li>
             </ul>
         </div>
+    </div>
+</section>
+
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h3 class="oe_slogan">Uninstall</h3>
+        <p class="oe_mt32 text-center">
+            Apps → BlueNova Backend Theme → Uninstall. The backend returns to stock Odoo
+            immediately. The module owns no business models or records, so nothing is left
+            behind but the saved palette and images, which are removed with it.
+        </p>
+        <p class="text-center oe_mt16" style="color:#6b7280;">
+            Licensed LGPL-3. Bundled fonts (Inter, Poppins) are SIL Open Font License 1.1.
+        </p>
     </div>
 </section>
